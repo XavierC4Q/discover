@@ -1,7 +1,8 @@
 import graphene
 from graphql_jwt.decorators import login_required
-from .models import User, Profile
-from .types import UserObjectType, ProfileObjectType
+from .models import User, Profile, Post
+from .types import UserObjectType, ProfileObjectType, PostObjectType
+
 
 class SignupMutation(graphene.Mutation):
     class Arguments:
@@ -49,26 +50,36 @@ class EditUserMutation(graphene.Mutation):
             return EditUserMutation(updated=True)
         return EditUserMutation(updated=False)
 
+
 class CreateProfileMutation(graphene.Mutation):
     class Arguments:
-        owner_id = graphene.ID(required=True)
         description = graphene.String()
         categories = graphene.List(graphene.String)
 
     new_profile = graphene.Field(ProfileObjectType)
 
     @login_required
-    def mutate(self, info, owner_id, description, categories):
-        get_owner = User.objects.get(id=owner_id)
-        if get_owner:
-            new_profile = Profile.objects.create(owner=get_owner, description=description, categories=categories)
-            return CreateProfileMutation(new_profile=new_profile)
-        return CreateProfileMutation(new_profile=None)
+    def mutate(self, info, description, categories):
+        new_profile = Profile.objects.create(
+            owner=info.context.user, description=description, categories=categories)
+        return CreateProfileMutation(new_profile=new_profile)
 
+class CreatePostMutation(graphene.Mutation):
+    class Arguments:
+        title = graphene.String(required=True)
+        text = graphene.String(required=True)
 
+    new_post = graphene.Field(PostObjectType)
+
+    @login_required
+    def mutate(self, info, title, text):
+        new_post = Post.objects.create(
+            owner=info.context.user, title=title, text=text)
+        return CreatePostMutation(new_post=new_post)
 
 
 class Mutation(graphene.ObjectType):
     signup = SignupMutation.Field()
     edit_user = EditUserMutation.Field()
     create_profile = CreateProfileMutation.Field()
+    create_post = CreatePostMutation.Field()

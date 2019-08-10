@@ -33,6 +33,10 @@ class Post(models.Model):
     title = models.CharField(max_length=100, blank=False, null=False)
     text = models.CharField(max_length=300, blank=False, null=False)
 
+    @property
+    def comments(self):
+        return Post.objects.get_posts_comments(id=self.id)
+
     def __str__(self):
         return F'Post {self.id} by {self.owner.username}'
 
