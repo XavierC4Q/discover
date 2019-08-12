@@ -1,31 +1,25 @@
 import graphene
 import graphql_jwt
-
-from .api import schema as apiSchema
-from .api.types import UserObjectType
+from .api.auth.schema import schema as authSchema
+from .api.users.schema import schema as userSchema
+from .api.posts.schema import schema as postSchema
 
 
 class Query(
-    apiSchema.Query,
+    authSchema.Query,
+    userSchema.Query,
+    postSchema.Query,
     graphene.ObjectType
 ):
     pass
 
-#Add user to token request
-class ObtainJSONWebToken(graphql_jwt.JSONWebTokenMutation):
-    user = graphene.Field(UserObjectType)
-
-    @classmethod
-    def resolve(cls, root, info, **kwargs):
-        return cls(user=info.context.user)
-
 class Mutation(
-    apiSchema.Mutation,
+    authSchema.Mutation,
+    userSchema.Mutation,
+    postSchema.Mutation,
     graphene.ObjectType,
 ):
-    get_token = ObtainJSONWebToken.Field()
-    verify_token = graphql_jwt.Verify.Field()
-    refresh_token = graphql_jwt.Refresh.Field()
+    pass
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

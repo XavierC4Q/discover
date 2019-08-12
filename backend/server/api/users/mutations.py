@@ -1,25 +1,7 @@
 import graphene
 from graphql_jwt.decorators import login_required
-from .models import User, Profile, Post
-from .types import UserObjectType, ProfileObjectType, PostObjectType
-
-
-class SignupMutation(graphene.Mutation):
-    class Arguments:
-        email = graphene.String(required=True)
-        username = graphene.String(required=True)
-        password = graphene.String(required=True)
-
-    new_user = graphene.Field(UserObjectType)
-
-    def mutate(self, info, email, username, password):
-        try:
-            create_user = User.objects.create_user(
-                username, email=email, password=password)
-            create_user.save()
-            return SignupMutation(new_user=create_user)
-        except:
-            raise Exception('Failed to create user')
+from server.api.models import User, Profile
+from .types import UserObjectType, ProfileObjectType
 
 
 class EditUserMutation(graphene.Mutation):
@@ -64,22 +46,7 @@ class CreateProfileMutation(graphene.Mutation):
             owner=info.context.user, description=description, categories=categories)
         return CreateProfileMutation(new_profile=new_profile)
 
-class CreatePostMutation(graphene.Mutation):
-    class Arguments:
-        title = graphene.String(required=True)
-        text = graphene.String(required=True)
-
-    new_post = graphene.Field(PostObjectType)
-
-    @login_required
-    def mutate(self, info, title, text):
-        new_post = Post.objects.create(
-            owner=info.context.user, title=title, text=text)
-        return CreatePostMutation(new_post=new_post)
-
 
 class Mutation(graphene.ObjectType):
-    signup = SignupMutation.Field()
     edit_user = EditUserMutation.Field()
-    create_profile = CreateProfileMutation.Field()
-    create_post = CreatePostMutation.Field()
+    create_user_profile = CreateProfileMutation.Field()
