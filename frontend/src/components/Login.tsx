@@ -16,9 +16,6 @@ const GET_AUTH_TOKEN = gql`
         username
         dateJoined
         lastLogin
-        latitude
-        longitude
-        searchDistance
         accountType
       }
     }

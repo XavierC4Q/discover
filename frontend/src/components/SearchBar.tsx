@@ -1,5 +1,8 @@
 import React from 'react';
+import gql from 'graphql-tag';
+import {useQuery} from '@apollo/react-hooks';
 import AppBar from '@material-ui/core/AppBar';
+import Link from '@material-ui/core/Link';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
@@ -59,13 +62,28 @@ const useStyles = makeStyles((theme: Theme) =>
           width: 200
         }
       }
+    },
+    authLinks: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      height: '80%',
+      backgroundColor: '#FEFEFE'
     }
   })
 );
 
-export default function SearchAppBar() {
-  const classes = useStyles();
+const CURRENT_USER = gql`
+  query getCurrentUser {
+    currentUser @client {
+      id
+    }
+  }
+`;
 
+const SearchAppBar: React.FC = () => {
+  const classes = useStyles();
+  const {data} = useQuery(CURRENT_USER);
   return (
     <div className={classes.root}>
       <AppBar position="static" color="secondary">
@@ -80,17 +98,30 @@ export default function SearchAppBar() {
             <div className={classes.searchIcon}>
               <SearchIcon />
             </div>
-            <InputBase
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput
-              }}
-              inputProps={{'aria-label': 'search'}}
-            />
+            {data && data.currentUser ? (
+              <InputBase
+                placeholder="Search…"
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput
+                }}
+                inputProps={{'aria-label': 'search'}}
+              />
+            ) : (
+              <div className={classes.authLinks}>
+                <Link href="/auth/login" variant="body2">
+                  Login
+                </Link>
+                <Link href="/auth/signup" variant="body2">
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </div>
         </Toolbar>
       </AppBar>
     </div>
   );
-}
+};
+
+export default SearchAppBar;

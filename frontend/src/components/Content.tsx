@@ -1,9 +1,11 @@
 import * as React from 'react';
-import {Route} from 'react-router-dom';
+import AuthRoute from './AuthRoute';
 import gql from 'graphql-tag';
-import {useQuery} from '@apollo/react-hooks';
 import Login from './Login';
 import ProtectedRoute from './ProtectedRoute';
+import SignUp from './SignUp';
+import { Route } from 'react-router-dom';
+import { useQuery } from '@apollo/react-hooks';
 
 const GET_CURRENT_USER = gql`
   query getCurrentUser {
@@ -17,12 +19,18 @@ const Content = () => {
   const {data} = useQuery(GET_CURRENT_USER);
   return (
     <React.Fragment>
-      <ProtectedRoute
+      <Route path='/' render={() => (<div>Home</div>)} />
+      <AuthRoute
         exact
         path="/auth/login"
         authenticated={data && data.currentUser}
-        redirectPath="/"
         component={Login}
+      />
+      <AuthRoute
+        exact
+        path="/auth/signup"
+        authenticated={data && data.currentUser}
+        component={SignUp}
       />
     </React.Fragment>
   );

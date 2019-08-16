@@ -4,14 +4,13 @@ import Container from '@material-ui/core/Container';
 import Content from './components/Content';
 import Footer from './components/Footer';
 import SearchAppBar from './components/SearchBar';
-import './styles/App.css';
 
 const App: React.FC = () => {
   return (
     <React.Fragment>
-      <CssBaseline />
-      <SearchAppBar />
-      <Container maxWidth={false} className="App">
+      <Container maxWidth={false}>
+        <CssBaseline />
+        <SearchAppBar />
         <Content />
         <Footer />
       </Container>

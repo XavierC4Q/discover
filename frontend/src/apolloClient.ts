@@ -28,10 +28,10 @@ const stateLink = withClientState({
   typeDefs
 });
 
-const LINK = ApolloLink.from([stateLink, authLink, httpLink]);
+const link = ApolloLink.from([stateLink, authLink, httpLink]);
 
 export const apolloClient = new ApolloClient({
-  link: LINK,
+  link,
   cache,
   resolvers: resolvers as any,
   typeDefs
