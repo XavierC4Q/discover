@@ -19,7 +19,7 @@ const Content = () => {
   const {data} = useQuery(GET_CURRENT_USER);
   return (
     <React.Fragment>
-      <Route path='/' render={() => (<div>Home</div>)} />
+      <Route exact path='/' render={() => (<div>Home</div>)} />
       <AuthRoute
         exact
         path="/auth/login"
